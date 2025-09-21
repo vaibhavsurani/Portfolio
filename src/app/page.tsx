@@ -1,103 +1,106 @@
-import Image from "next/image";
+import ProjectCard from "./components/ProjectCard";
+// import { IProject } from "@/models/Project"; // Import the interface
 
-export default function Home() {
+// This function fetches data on the server side
+async function getProjects() {
+  // We use the absolute URL for server-side fetching
+  const apiUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}/api/projects`
+    : 'http://localhost:3000/api/projects';
+
+  const res = await fetch(apiUrl, {
+    // Revalidate every hour to fetch new projects
+    next: { revalidate: 3600 }
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch projects');
+  }
+
+  const { data } = await res.json();
+  return data;
+}
+
+export default async function Home() {
+  // const projects: IProject[] = await getProjects();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="max-w-5xl mx-auto px-4 py-16">
+      {/* Hero Section */}
+      <section className="text-center py-20">
+        <h1 className="text-5xl font-bold text-gray-900">Creative UI/UX Designer</h1>
+        <p className="mt-4 text-lg text-gray-600">I design beautiful and functional user experiences.</p>
+      </section>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Projects Section */}
+      {/* <section id="projects">
+        <h2 className="text-3xl font-bold text-center mb-12">My Work</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {projects && projects.length > 0 ? (
+            projects.map((project) => (
+              <ProjectCard
+                key={project.slug}
+                slug={project.slug}
+                title={project.title}
+                description={project.description}
+                imageUrl={project.imageUrl}
+              />
+            ))
+          ) : (
+            <p className="text-center col-span-2">No projects found. Add some to your database!</p>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section> */}
+    </main>
   );
 }
+// ```
+
+// Now, when you run `npm run dev`, your homepage will fetch projects directly from your MongoDB Atlas database!
+
+// ### **Step 2: Push Your Code to a Git Repository**
+
+// Vercel deploys directly from a Git repository.
+
+// 1.  **Create a GitHub Repository:** Go to [GitHub](https://github.com) and create a new, empty repository. Do not initialize it with a README.
+// 2.  **Initialize Git locally:** In your project's terminal, run:
+//     ```bash
+//     git init -b main
+//     git add .
+//     git commit -m "Initial commit: Setup portfolio project"
+//     ```
+// 3.  **Link and Push:** Copy the commands from your new GitHub repository page to link your local project and push your code. It will look like this:
+//     ```bash
+//     git remote add origin [https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git)
+//     git push -u origin main
+//     ```
+
+// ### **Step 3: Deploy to Vercel**
+
+// 1.  **Sign up for Vercel:** Go to [vercel.com](https://vercel.com) and sign up with your GitHub account. It's free for personal projects.
+// 2.  **Import Your Project:**
+//     * On your Vercel dashboard, click **Add New...** > **Project**.
+//     * Find your portfolio repository in the list and click **Import**.
+// 3.  **Configure the Project:**
+//     * Vercel will automatically detect that it's a Next.js project. You shouldn't need to change any build settings.
+//     * **Crucially, you must add your environment variable.** Expand the **Environment Variables** section.
+//     * Add a new variable with the key `MONGODB_URI`.
+//     * For the value, paste in your full MongoDB connection string (the same one from your `.env.local` file).
+//     * Click **Add**.
+// 4.  **Deploy:** Click the **Deploy** button.
+
+// Vercel will now build and deploy your application. It will take a minute or two. Once it's done, you'll be given a URL where you can see your live portfolio! 
+
+// ### **Step 4: Continuous Deployment**
+
+// Congratulations, your portfolio is live!
+
+// The best part about this setup is the **continuous deployment**. Every time you push a new commit to your `main` branch on GitHub, Vercel will automatically trigger a new build and deploy the changes.
+
+// **Your workflow now looks like this:**
+// 1.  Make changes to your code locally (e.g., improve styling, add a new page).
+// 2.  Add or update projects in your MongoDB Atlas database.
+// 3.  Commit and push your code changes to GitHub.
+// 4.  Vercel handles the rest, and your live site is updated within minutes.
+
+// You have successfully built a full-stack portfolio website from scratch and deployed it globally!
