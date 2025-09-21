@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image'; // Import the Next.js Image component
 import { Github, Linkedin, Mail, ArrowRight, LoaderCircle, ServerCrash } from 'lucide-react';
 import { IProject } from '@/models/Project';
 import ProjectCard from '@/components/ProjectCard';
@@ -19,8 +20,12 @@ export default function PortfolioPage() {
         }
         const data = await response.json();
         setProjects(data.data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) { // Use 'unknown' instead of 'any' for type safety
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('An unexpected error occurred.');
+        }
       } finally {
         setLoading(false);
       }
@@ -58,25 +63,25 @@ export default function PortfolioPage() {
             <div className="flex flex-col md:flex-row items-center gap-12">
                 <div className="md:w-1/3">
                     <div className="w-48 h-48 md:w-64 md:h-64 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1 shadow-2xl">
-                        <img 
+                        <Image 
                             src="https://placehold.co/256x256/1e293b/94a3b8?text=V" 
                             alt="Vaibhav" 
                             className="w-full h-full rounded-full object-cover"
-                            onError={(e) => e.currentTarget.src = 'https://placehold.co/256x256/1e293b/94a3b8?text=V'}
+                            width={256}
+                            height={256}
                         />
                     </div>
                 </div>
                 <div className="md:w-2/3 text-center md:text-left">
                     <p className="text-lg text-slate-400 mb-4">
-                        Hello! I'm Vaibhav, a passionate UI/UX designer with a knack for creating seamless and engaging digital experiences. My journey into design started with a fascination for how users interact with technology, and it has evolved into a career dedicated to crafting solutions that are not only visually appealing but also highly functional.
+                        Hello! I&apos;m Vaibhav, a passionate UI/UX designer with a knack for creating seamless and engaging digital experiences. My journey into design started with a fascination for how users interact with technology, and it has evolved into a career dedicated to crafting solutions that are not only visually appealing but also highly functional.
                     </p>
                     <p className="text-lg text-slate-400">
-                        I thrive on solving complex problems and turning them into simple, elegant designs. When I'm not designing, you can find me exploring the latest tech trends or contributing to open-source projects.
+                        I thrive on solving complex problems and turning them into simple, elegant designs. When I&apos;m not designing, you can find me exploring the latest tech trends or contributing to open-source projects.
                     </p>
                 </div>
             </div>
         </section>
-
 
         {/* Projects Section */}
         <section id="projects" className="py-20">
@@ -118,12 +123,12 @@ export default function PortfolioPage() {
         <section id="contact" className="py-20 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">Get In Touch</h2>
           <p className="text-slate-400 text-lg mb-8 max-w-2xl mx-auto">
-            I'm currently available for freelance work and open to new opportunities. If you have a project in mind or just want to say hello, feel free to reach out!
+            I&apos;m currently available for freelance work and open to new opportunities. If you have a project in mind or just want to say hello, feel free to reach out!
           </p>
           <div className="flex justify-center items-center space-x-6">
-            <a href="mailto:vaibhavsurani5@example.com" className="inline-flex items-center text-lg text-purple-400 hover:text-purple-300 transition-colors">
+            <a href="mailto:vaibhavsurani5@gmail.com" className="inline-flex items-center text-lg text-purple-400 hover:text-purple-300 transition-colors">
               <Mail className="h-6 w-6 mr-2" />
-              vaibhavsurani5@example.com
+              vaibhavsurani5@gmail.com
             </a>
             <a href="https://github.com/vaibhavsurani" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
               <Github className="h-8 w-8" />
@@ -137,3 +142,4 @@ export default function PortfolioPage() {
     </div>
   );
 }
+

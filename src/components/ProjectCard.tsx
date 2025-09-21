@@ -1,5 +1,6 @@
 import { IProject } from '@/models/Project';
 import { ArrowUpRight } from 'lucide-react';
+import Image from 'next/image';
 
 interface ProjectCardProps {
   project: IProject;
@@ -9,7 +10,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <div className="bg-slate-800 rounded-lg overflow-hidden shadow-lg hover:shadow-purple-500/20 transition-all duration-300 group">
       <div className="relative">
-        <img
+        <Image
           src={project.imageUrl || `https://placehold.co/600x400/1e293b/94a3b8?text=${project.title.replace(' ', '+')}`}
           alt={project.title}
           className="w-full h-56 object-cover"
