@@ -1,106 +1,139 @@
-import ProjectCard from "./components/ProjectCard";
-// import { IProject } from "@/models/Project"; // Import the interface
+'use client';
 
-// This function fetches data on the server side
-async function getProjects() {
-  // We use the absolute URL for server-side fetching
-  const apiUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}/api/projects`
-    : 'http://localhost:3000/api/projects';
+import { useState, useEffect } from 'react';
+import { Github, Linkedin, Mail, ArrowRight, LoaderCircle, ServerCrash } from 'lucide-react';
+import { IProject } from '@/models/Project';
+import ProjectCard from '@/components/ProjectCard';
 
-  const res = await fetch(apiUrl, {
-    // Revalidate every hour to fetch new projects
-    next: { revalidate: 3600 }
-  });
+export default function PortfolioPage() {
+  const [projects, setProjects] = useState<IProject[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch projects');
-  }
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const response = await fetch('/api/projects');
+        if (!response.ok) {
+          throw new Error('Failed to fetch projects. Please try again later.');
+        }
+        const data = await response.json();
+        setProjects(data.data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProjects();
+  }, []);
 
-  const { data } = await res.json();
-  return data;
-}
-
-export default async function Home() {
-  // const projects: IProject[] = await getProjects();
+  const skills = [
+    'UI/UX Design', 'Figma', 'User Research', 'Wireframing', 'Prototyping', 
+    'React', 'Next.js', 'Tailwind CSS', 'TypeScript', 'MongoDB'
+  ];
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-16">
-      {/* Hero Section */}
-      <section className="text-center py-20">
-        <h1 className="text-5xl font-bold text-gray-900">Creative UI/UX Designer</h1>
-        <p className="mt-4 text-lg text-gray-600">I design beautiful and functional user experiences.</p>
-      </section>
+    <div className="bg-slate-900 text-slate-300 font-sans">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Hero Section */}
+        <section id="home" className="text-center py-20">
+          <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 mb-4">
+            Creative UI/UX Designer
+          </h1>
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-400 mb-8">
+            I design and build beautiful, intuitive, and responsive user interfaces that delight users and drive business goals.
+          </p>
+          <a
+            href="#projects"
+            className="inline-flex items-center justify-center px-8 py-4 bg-purple-600 text-white font-semibold rounded-lg shadow-lg hover:bg-purple-700 transition-transform transform hover:scale-105 duration-300"
+          >
+            View My Work <ArrowRight className="ml-2 h-5 w-5" />
+          </a>
+        </section>
 
-      {/* Projects Section */}
-      {/* <section id="projects">
-        <h2 className="text-3xl font-bold text-center mb-12">My Work</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {projects && projects.length > 0 ? (
-            projects.map((project) => (
-              <ProjectCard
-                key={project.slug}
-                slug={project.slug}
-                title={project.title}
-                description={project.description}
-                imageUrl={project.imageUrl}
-              />
-            ))
-          ) : (
-            <p className="text-center col-span-2">No projects found. Add some to your database!</p>
+        {/* About Me Section */}
+        <section id="about" className="py-20">
+            <h2 className="text-4xl font-bold text-center mb-12 text-white">About Me</h2>
+            <div className="flex flex-col md:flex-row items-center gap-12">
+                <div className="md:w-1/3">
+                    <div className="w-48 h-48 md:w-64 md:h-64 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1 shadow-2xl">
+                        <img 
+                            src="https://placehold.co/256x256/1e293b/94a3b8?text=V" 
+                            alt="Vaibhav" 
+                            className="w-full h-full rounded-full object-cover"
+                            onError={(e) => e.currentTarget.src = 'https://placehold.co/256x256/1e293b/94a3b8?text=V'}
+                        />
+                    </div>
+                </div>
+                <div className="md:w-2/3 text-center md:text-left">
+                    <p className="text-lg text-slate-400 mb-4">
+                        Hello! I'm Vaibhav, a passionate UI/UX designer with a knack for creating seamless and engaging digital experiences. My journey into design started with a fascination for how users interact with technology, and it has evolved into a career dedicated to crafting solutions that are not only visually appealing but also highly functional.
+                    </p>
+                    <p className="text-lg text-slate-400">
+                        I thrive on solving complex problems and turning them into simple, elegant designs. When I'm not designing, you can find me exploring the latest tech trends or contributing to open-source projects.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        {/* Projects Section */}
+        <section id="projects" className="py-20">
+          <h2 className="text-4xl font-bold text-center mb-12 text-white">My Projects</h2>
+          {loading && (
+            <div className="flex justify-center items-center h-40">
+              <LoaderCircle className="h-12 w-12 animate-spin text-purple-400" />
+              <p className="ml-4 text-lg">Loading Projects...</p>
+            </div>
           )}
-        </div>
-      </section> */}
-    </main>
+          {error && (
+            <div className="flex flex-col items-center justify-center h-40 bg-red-900/20 rounded-lg">
+              <ServerCrash className="h-12 w-12 text-red-400" />
+              <p className="mt-4 text-lg text-red-400">{error}</p>
+            </div>
+          )}
+          {!loading && !error && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projects.map((project) => (
+                <ProjectCard key={project.title} project={project} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Skills Section */}
+        <section id="skills" className="py-20">
+          <h2 className="text-4xl font-bold text-center mb-12 text-white">My Skills</h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            {skills.map((skill) => (
+              <div key={skill} className="bg-slate-800 text-slate-300 px-6 py-3 rounded-full text-lg font-medium shadow-md">
+                {skill}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section id="contact" className="py-20 text-center">
+          <h2 className="text-4xl font-bold text-white mb-4">Get In Touch</h2>
+          <p className="text-slate-400 text-lg mb-8 max-w-2xl mx-auto">
+            I'm currently available for freelance work and open to new opportunities. If you have a project in mind or just want to say hello, feel free to reach out!
+          </p>
+          <div className="flex justify-center items-center space-x-6">
+            <a href="mailto:vaibhavsurani5@example.com" className="inline-flex items-center text-lg text-purple-400 hover:text-purple-300 transition-colors">
+              <Mail className="h-6 w-6 mr-2" />
+              vaibhavsurani5@example.com
+            </a>
+            <a href="https://github.com/vaibhavsurani" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+              <Github className="h-8 w-8" />
+            </a>
+            <a href="https://linkedin.com/in/vaibhavsurani" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+              <Linkedin className="h-8 w-8" />
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
   );
 }
-// ```
-
-// Now, when you run `npm run dev`, your homepage will fetch projects directly from your MongoDB Atlas database!
-
-// ### **Step 2: Push Your Code to a Git Repository**
-
-// Vercel deploys directly from a Git repository.
-
-// 1.  **Create a GitHub Repository:** Go to [GitHub](https://github.com) and create a new, empty repository. Do not initialize it with a README.
-// 2.  **Initialize Git locally:** In your project's terminal, run:
-//     ```bash
-//     git init -b main
-//     git add .
-//     git commit -m "Initial commit: Setup portfolio project"
-//     ```
-// 3.  **Link and Push:** Copy the commands from your new GitHub repository page to link your local project and push your code. It will look like this:
-//     ```bash
-//     git remote add origin [https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git)
-//     git push -u origin main
-//     ```
-
-// ### **Step 3: Deploy to Vercel**
-
-// 1.  **Sign up for Vercel:** Go to [vercel.com](https://vercel.com) and sign up with your GitHub account. It's free for personal projects.
-// 2.  **Import Your Project:**
-//     * On your Vercel dashboard, click **Add New...** > **Project**.
-//     * Find your portfolio repository in the list and click **Import**.
-// 3.  **Configure the Project:**
-//     * Vercel will automatically detect that it's a Next.js project. You shouldn't need to change any build settings.
-//     * **Crucially, you must add your environment variable.** Expand the **Environment Variables** section.
-//     * Add a new variable with the key `MONGODB_URI`.
-//     * For the value, paste in your full MongoDB connection string (the same one from your `.env.local` file).
-//     * Click **Add**.
-// 4.  **Deploy:** Click the **Deploy** button.
-
-// Vercel will now build and deploy your application. It will take a minute or two. Once it's done, you'll be given a URL where you can see your live portfolio! 
-
-// ### **Step 4: Continuous Deployment**
-
-// Congratulations, your portfolio is live!
-
-// The best part about this setup is the **continuous deployment**. Every time you push a new commit to your `main` branch on GitHub, Vercel will automatically trigger a new build and deploy the changes.
-
-// **Your workflow now looks like this:**
-// 1.  Make changes to your code locally (e.g., improve styling, add a new page).
-// 2.  Add or update projects in your MongoDB Atlas database.
-// 3.  Commit and push your code changes to GitHub.
-// 4.  Vercel handles the rest, and your live site is updated within minutes.
-
-// You have successfully built a full-stack portfolio website from scratch and deployed it globally!
